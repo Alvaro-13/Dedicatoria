@@ -1,4 +1,108 @@
-https://alvaro-13.github.io/Dedicatoria/https://alvaro-13.github.io/Dedicatoria/    /* --- EXPLOSIONES DE BOTONES (Blast) --- */
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¿Quieres ser mi enamorada?</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* 1. ESTILOS BASE Y ANTI-SELECCIÓN */
+    * { 
+        box-sizing: border-box; 
+        font-family: 'Dancing Script', cursive; 
+        -webkit-user-select: none; 
+        -moz-user-select: none;    
+        -ms-user-select: none;     
+        user-select: none;         
+        outline: none !important;
+    }
+    body {
+      margin: 0; padding: 0;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      min-height: 100vh; overflow: hidden;
+      background-color: #000;
+      color: #fff;
+      position: relative;
+    }
+
+    /* --- SISTEMA 1: PARTÍCULAS ORIGINALES DE PUNTOS BLANCOS (FLOTANTES) --- */
+    .particle {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: spawn-fade-move 8s linear infinite; 
+    }
+    @keyframes spawn-fade-move {
+      0% { opacity: 0; transform: translate(0, 0) scale(0.1); }
+      10% { opacity: 1; transform: translate(0, 0) scale(0.6); }
+      90% { opacity: 1; }
+      100% { opacity: 0; transform: translate(var(--end-x), var(--end-y)) scale(0.1); }
+    }
+
+    /* --- SISTEMA 2: CORAZONES CAYENDO (EN CONTENEDORES) --- */
+    @keyframes heart-fall {
+      0% { 
+        opacity: 0; 
+        transform: translateY(-100%) scale(0.3); 
+      }
+      5% { 
+        opacity: 0.7; 
+        transform: translateY(0) scale(0.8); 
+      }
+      95% { 
+        opacity: 0.7; 
+        transform: translateY(100%) scale(0.8); 
+      }
+      100% { 
+        opacity: 0; 
+        transform: translateY(200%) scale(0.3); 
+      }
+    }
+    .falling-heart {
+      position: absolute; 
+      color: #ff0000; 
+      font-size: 18px; 
+      pointer-events: none; 
+      z-index: 50;
+      animation: heart-fall var(--heart-duration) linear infinite; 
+    }
+
+    /* --- ANIMACIÓN: CORAZÓN PALPITANTE --- */
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+    .heart-icon {
+        display: inline-block;
+        /* El tamaño se ajusta por el font-size de #respuesta */
+        animation: heartbeat 1.5s ease-in-out infinite; 
+    }
+
+    /* --- SISTEMA 3: ESTRELLA FUGAZ --- */
+    .shooting-star {
+      position: absolute; width: 4px; height: 4px; background: #fff; 
+      border-radius: 50%; box-shadow: 0 0 8px 4px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5); 
+      pointer-events: none; z-index: 5; opacity: 0; transform: rotate(45deg); 
+      animation: shoot-fade-trail var(--star-duration) linear forwards; 
+    }
+    .shooting-star::after {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(to right, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.0) 100%);
+      transform-origin: 0% 50%; transform: scaleX(var(--trail-length)) translateX(-50%); 
+      box-shadow: 0 0 10px rgba(255,255,255,0.6); border-radius: 2px;
+    }
+    @keyframes shoot-fade-trail {
+      0% { opacity: 0; transform: translateX(var(--start-x)) translateY(var(--start-y)) rotate(45deg) scale(0.5); }
+      10% { opacity: 1; transform: translateX(var(--start-x)) translateY(var(--start-y)) rotate(45deg) scale(1); }
+      90% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(var(--end-x)) translateY(var(--end-y)) rotate(45deg) scale(0.5); }
+    }
+    
+    /* --- EXPLOSIONES DE BOTONES (Blast) --- */
     .heart-blast {
         position: absolute; color: #ff0000; font-size: 24px; transform: translate(-50%, -50%); 
         pointer-events: none; animation: blast-move-up 1.5s ease-out forwards; z-index: 1000;
@@ -140,9 +244,10 @@ https://alvaro-13.github.io/Dedicatoria/https://alvaro-13.github.io/Dedicatoria/
     </div>
   </div>
 
-  <audio id="music" loop muted autoplay playsinline>
+  <audio id="music" loop preload="auto">
     <source src="https://www.dropbox.com/scl/fi/ayoso1smwqupvb4po6x65/_mcrichix-_parati-_rap-_romantic-_-XD-MP3.mp3?rlkey=feby041g52f6ey8djvyiflzn3&st=2zqn9euw&raw=1" type="audio/mpeg">
   </audio>
+
   <script>
     const nobtn = document.getElementById("nobtn");
     const yesbtn = document.getElementById("yesbtn");
@@ -252,25 +357,33 @@ https://alvaro-13.github.io/Dedicatoria/https://alvaro-13.github.io/Dedicatoria/
       }, 300);
     });
 
-    // FUNCIÓN CENTRAL: Habilita el sonido al primer clic/toque
-    function enableSoundOnFirstInteraction(){
-      // Desmutea y sube el volumen.
-      music.muted = false;
-      music.volume = 1;
-
-      // Por si acaso, intentamos reproducir (aunque el autoplay muted ya debería haberlo hecho)
-      music.play().catch(error => {
-        console.error("No se pudo iniciar la reproducción de audio con sonido:", error);
-      });
-      
-      // Una vez activado el sonido, removemos los listeners para que no se ejecute de nuevo.
-      document.removeEventListener("click", enableSoundOnFirstInteraction);
-      document.removeEventListener("touchstart", enableSoundOnFirstInteraction);
-    }
+    // CÓDIGO CLAVE: Inicia la reproducción de audio al primer clic o toque.
+    let isAudioStarted = false;
     
-    // Escucha el primer click o toque en CUALQUIER PARTE de la pantalla para habilitar el sonido
-    document.addEventListener("click", enableSoundOnFirstInteraction);
-    document.addEventListener("touchstart", enableSoundOnFirstInteraction);
+    // Función para intentar reproducir el audio
+    function tryPlayAudio() {
+      if (isAudioStarted) return;
+      
+      // Intenta reproducir el audio con volumen
+      music.play()
+        .then(() => {
+          isAudioStarted = true;
+          // Una vez iniciado, eliminamos los listeners
+          document.removeEventListener("click", tryPlayAudio);
+          document.removeEventListener("touchstart", tryPlayAudio);
+        })
+        .catch(e => {
+          // Esto puede ocurrir si el audio aún no está completamente cargado.
+          console.warn("Fallo al intentar iniciar la reproducción de audio. Inténtelo de nuevo:", e);
+        });
+    }
+
+    // Precarga el archivo inmediatamente para mitigar la intermitencia.
+    music.load();
+    
+    // Escucha el primer click o toque en CUALQUIER PARTE de la pantalla.
+    document.addEventListener("click", tryPlayAudio);
+    document.addEventListener("touchstart", tryPlayAudio);
     
     // --- LÓGICA DE PARTÍCULAS ORIGINALES (PUNTOS BLANCOS FLOTANTES) ---
     function createParticle() {
